@@ -10,13 +10,14 @@ data = {
     "Category": ["Electronics", "Electronics", "Accessories", "Electronics", "Electronics", "Electronics", "Fashion", "Fashion"],
     "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000],
     "Ratings": [4.5, 4.7, 4.2, 4.3, 4.6, 4.4, 4.1, 4.0],
-    "Stock": [10, 25, 50, 15, 20, 5, 30, 40]
+    "Stock": [10, 25, 50, 15, 20, 5, 30, 40],
+    "Discount": [10, 15, 5, 8, 12, 20, 25, 18]
 }
 df = pd.DataFrame(data)
 
 # Function to recommend products based on category
 def recommend_products(category):
-    return df[df["Category"] == category][["Product", "Price", "Ratings"]]
+    return df[df["Category"] == category][["Product", "Price", "Ratings", "Discount"]]
 
 # Function to filter products by budget
 def filter_by_budget(budget):
@@ -41,6 +42,12 @@ def plot_ratings():
     plt.ylabel("Ratings")
     plt.title("Product Ratings")
     st.pyplot(fig)
+
+# Function to show best discounts
+def best_discounts():
+    top_discounts = df.sort_values(by="Discount", ascending=False).head(5)
+    st.write("### Best Discounted Products")
+    st.table(top_discounts)
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
@@ -78,6 +85,9 @@ plot_price_distribution()
 
 st.write("### Product Ratings Overview")
 plot_ratings()
+
+# Show best discounted products
+best_discounts()
 
 # Stock availability alert
 low_stock = df[df["Stock"] < 10]
