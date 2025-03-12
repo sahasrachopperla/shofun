@@ -11,17 +11,18 @@ import plotly.graph_objects as go
 data = {
     "Product": ["Laptop", "Smartphone", "Headphones", "Smartwatch", "Tablet", "Camera", "Shoes", "Backpack", "Gaming Console", "Smart TV", "Bluetooth Speaker", "Wireless Earbuds", "Mechanical Keyboard", "Monitor", "Printer", "Fitness Band", "Jacket", "Sunglasses", "Handbag", "Jeans", "T-shirt", "Sneakers", "Watch", "Hat"],
     "Category": ["Electronics", "Electronics", "Accessories", "Electronics", "Electronics", "Electronics", "Fashion", "Fashion", "Electronics", "Electronics", "Accessories", "Accessories", "Accessories", "Electronics", "Electronics", "Fitness", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion"],
-    "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000, 50000, 45000, 5000, 6000, 7000, 20000, 15000, 8000, 5000, 3500, 7000, 2500, 1500, 4000, 6000, 1000]
+    "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000, 50000, 45000, 5000, 6000, 7000, 20000, 15000, 8000, 5000, 3500, 7000, 2500, 1500, 4000, 6000, 1000],
+    "Buy From": ["Amazon", "Flipkart", "Amazon", "Croma", "Amazon", "Best Buy", "Nike", "Amazon", "GameStop", "Reliance Digital", "Amazon", "Flipkart", "Amazon", "Dell Store", "HP Store", "Decathlon", "Myntra", "LensKart", "Zara", "Levi's", "H&M", "Adidas", "Titan", "Myntra"]
 }
 df = pd.DataFrame(data)
 
 # Function to recommend products based on category
 def recommend_products(category):
-    return df[df["Category"] == category][["Product", "Price"]]
+    return df[df["Category"] == category][["Product", "Price", "Buy From"]]
 
 # Function to filter products by budget
 def filter_by_budget(budget, category):
-    return df[(df["Price"] <= budget) & (df["Category"] == category)][["Product", "Price"]]
+    return df[(df["Price"] >= 1000) & (df["Price"] <= budget) & (df["Category"] == category)][["Product", "Price", "Buy From"]]
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
@@ -62,7 +63,8 @@ if to_compare:
 # AI-powered product suggestion
 if st.button("Get AI-Powered Suggestions"):
     suggestion = random.choice(df["Product"].tolist())
-    st.success(f"Based on your preferences, we suggest: **{suggestion}**!")
+    buy_from = df[df["Product"] == suggestion]["Buy From"].values[0]
+    st.success(f"Based on your preferences, we suggest: **{suggestion}**! You can buy it from **{buy_from}**.")
 
 # Visualizations
 st.write("### Data Visualizations")
