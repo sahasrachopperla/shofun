@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import random
+import matplotlib.pyplot as plt
 
 # Sample product data
 data = {
@@ -17,6 +18,16 @@ def recommend_products(category):
 # Function to filter products by budget
 def filter_by_budget(budget):
     return df[df["Price"] <= budget]
+
+# Function to plot price distribution
+def plot_price_distribution():
+    fig, ax = plt.subplots()
+    ax.bar(df["Product"], df["Price"], color='skyblue')
+    plt.xticks(rotation=45)
+    plt.xlabel("Product")
+    plt.ylabel("Price")
+    plt.title("Product Price Distribution")
+    st.pyplot(fig)
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
@@ -46,6 +57,10 @@ st.table(df[df["Product"].isin(to_compare)])
 if st.button("Get AI-Powered Suggestions"):
     suggestion = random.choice(df["Product"].tolist())
     st.success(f"Based on your preferences, we suggest: **{suggestion}**!")
+
+# Display Price Distribution Graph
+st.write("### Price Distribution of Products")
+plot_price_distribution()
 
 # Footer
 st.write("---")
