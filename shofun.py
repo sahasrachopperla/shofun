@@ -49,6 +49,19 @@ def best_discounts():
     st.write("### Best Discounted Products")
     st.table(top_discounts)
 
+# Function to plot product comparison
+def plot_comparison(products):
+    if products:
+        selected_df = df[df["Product"].isin(products)]
+        fig, ax = plt.subplots()
+        ax.bar(selected_df["Product"], selected_df["Price"], color='purple', label="Price")
+        ax.set_xlabel("Product")
+        ax.set_ylabel("Price")
+        ax.set_title("Product Price Comparison")
+        plt.xticks(rotation=45)
+        plt.legend()
+        st.pyplot(fig)
+
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
 st.write("Find the best products tailored to your needs!")
@@ -73,6 +86,7 @@ st.write("### Your Wishlist:", wishlist)
 to_compare = st.multiselect("Select products to compare", df["Product"].tolist())
 st.write("### Comparison Table:")
 st.table(df[df["Product"].isin(to_compare)])
+plot_comparison(to_compare)
 
 # AI-powered product suggestion (Basic Random Suggestion for Demo)
 if st.button("Get AI-Powered Suggestions"):
