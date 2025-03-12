@@ -16,28 +16,42 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Function to plot different graphs
-def plot_graphs():
-    fig, ax = plt.subplots(1, 3, figsize=(18, 5))
-    
-    # Pie chart for product category distribution
+# Function to plot Pie Chart
+def plot_pie_chart():
     category_counts = df["Category"].value_counts()
-    ax[0].pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=140)
-    ax[0].set_title("Product Category Distribution")
-    
-    # Line graph for price trend per product
-    ax[1].plot(df["Product"], df["Price"], marker='o', linestyle='-', color='b')
-    ax[1].set_xticklabels(df["Product"], rotation=90)
-    ax[1].set_xlabel("Products")
-    ax[1].set_ylabel("Price")
-    ax[1].set_title("Price Trend Across Products")
-    
-    # Histogram for price distribution
-    ax[2].hist(df["Price"], bins=10, color='g', alpha=0.7)
-    ax[2].set_xlabel("Price Range")
-    ax[2].set_ylabel("Number of Products")
-    ax[2].set_title("Price Distribution")
-    
+    fig, ax = plt.subplots()
+    ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=140)
+    ax.set_title("Product Category Distribution")
+    st.pyplot(fig)
+
+# Function to plot Line Graph
+def plot_line_graph():
+    fig, ax = plt.subplots()
+    ax.plot(df["Product"], df["Price"], marker='o', linestyle='-', color='b')
+    ax.set_xticklabels(df["Product"], rotation=90)
+    ax.set_xlabel("Products")
+    ax.set_ylabel("Price")
+    ax.set_title("Price Trend Across Products")
+    st.pyplot(fig)
+
+# Function to plot Histogram
+def plot_histogram():
+    fig, ax = plt.subplots()
+    ax.hist(df["Price"], bins=10, color='g', alpha=0.7)
+    ax.set_xlabel("Price Range")
+    ax.set_ylabel("Number of Products")
+    ax.set_title("Price Distribution")
+    st.pyplot(fig)
+
+# Function to plot Bar Graph for Comparison
+def plot_comparison_graph(selected_products):
+    comparison_data = df[df["Product"].isin(selected_products)]
+    fig, ax = plt.subplots()
+    ax.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
+    ax.set_xlabel("Products")
+    ax.set_ylabel("Price")
+    ax.set_title("Product Price Comparison")
+    ax.set_xticklabels(comparison_data["Product"], rotation=90)
     st.pyplot(fig)
 
 # Streamlit UI
@@ -63,21 +77,20 @@ st.write("### Your Wishlist:", wishlist)
 # Product comparison
 to_compare = st.multiselect("Select products to compare", df["Product"].tolist())
 if to_compare:
-    comparison_data = df[df["Product"].isin(to_compare)]
     st.write("### Price Comparison:")
+    comparison_data = df[df["Product"].isin(to_compare)]
     st.table(comparison_data)
-    
-    # Price comparison graph
-    plt.figure(figsize=(10, 5))
-    plt.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
-    plt.xlabel("Products")
-    plt.ylabel("Price")
-    plt.title("Product Price Comparison")
-    plt.xticks(rotation=90)
-    st.pyplot(plt)
+    plot_comparison_graph(to_compare)
 
 # Display graphs
-plot_graphs()
+st.write("### Product Category Distribution")
+plot_pie_chart()
+
+st.write("### Price Trend Across Products")
+plot_line_graph()
+
+st.write("### Price Distribution")
+plot_histogram()
 
 # Footer
 st.write("---")
