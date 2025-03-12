@@ -13,9 +13,7 @@ data = {
     "Category": ["Electronics", "Electronics", "Accessories", "Electronics", "Electronics", "Electronics", "Fashion", "Fashion", "Electronics", "Electronics", "Accessories", "Accessories", "Accessories", "Electronics", "Electronics", "Fitness", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion"],
     "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000, 50000, 45000, 5000, 6000, 7000, 20000, 15000, 8000, 5000, 3500, 7000, 2500, 1500, 4000, 6000, 1000],
     "Ratings": [4.5, 4.7, 4.2, 4.3, 4.6, 4.4, 4.1, 4.0, 4.8, 4.6, 4.3, 4.5, 4.7, 4.4, 4.2, 4.5, 4.3, 4.2, 4.6, 4.0, 3.9, 4.5, 4.3, 4.1],
-    "Stock": [10, 25, 50, 15, 20, 5, 30, 40, 12, 18, 35, 40, 22, 10, 8, 25, 20, 15, 18, 30, 40, 25, 12, 50],
-    "Discount": [10, 15, 5, 8, 12, 20, 25, 18, 10, 15, 8, 10, 12, 5, 10, 18, 20, 15, 18, 10, 12, 15, 10, 5],
-    "Buy From": ["Amazon", "Flipkart", "Croma", "Amazon", "Reliance Digital", "Amazon", "Nike", "Amazon", "Flipkart", "Amazon", "Flipkart", "Amazon", "Croma", "Flipkart", "Amazon", "Nike", "Myntra", "LensKart", "Amazon", "Levi's", "Myntra", "Adidas", "Titan", "Amazon"]
+    "Stock": [10, 25, 50, 15, 20, 5, 30, 40, 12, 18, 35, 40, 22, 10, 8, 25, 20, 15, 18, 30, 40, 25, 12, 50]
 }
 df = pd.DataFrame(data)
 
@@ -24,12 +22,8 @@ def recommend_products(categories):
     return df[df["Category"].isin(categories)]
 
 # Function to filter products by budget
-def filter_by_budget(budget):
-    return df[df["Price"] <= budget]
-
-# Function to get best discounts
-def best_discounts():
-    return df.sort_values(by="Discount", ascending=False).head(5)
+def filter_by_budget(budget, categories):
+    return df[(df["Price"] <= budget) & (df["Category"].isin(categories))]
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
@@ -44,19 +38,9 @@ if categories:
 
 # Budget filtering
 budget = st.slider("Select your budget", min_value=1000, max_value=80000, step=1000)
-filtered_products = filter_by_budget(budget)
+filtered_products = filter_by_budget(budget, categories)
 st.write("### Products within your budget:")
 st.table(filtered_products)
-
-# Filter fashion-related products under budget
-if "Fashion" in categories:
-    fashion_products = df[(df["Category"] == "Fashion") & (df["Price"] <= budget)]
-    st.write("### Fashion Products Within Your Budget:")
-    st.table(fashion_products)
-
-# Display best discounts
-st.write("### Top 5 Best Discounts:")
-st.table(best_discounts())
 
 # Wishlist feature
 wishlist = st.multiselect("Add products to your wishlist", df["Product"].tolist())
@@ -69,7 +53,7 @@ if to_compare:
     st.write("### Price Comparison:")
     st.table(comparison_data)
 
-    # Price Comparison Bar Chart (Seaborn)
+    # Price Comparison Bar Chart
     st.write("### Price Comparison Chart")
     fig, ax = plt.subplots()
     sns.barplot(x=comparison_data["Product"], y=comparison_data["Price"], palette="coolwarm", ax=ax)
@@ -82,22 +66,17 @@ if to_compare:
 # AI-powered product suggestion
 if st.button("Get AI-Powered Suggestions"):
     suggestion = random.choice(df["Product"].tolist())
-    st.success(f"Based on your preferences, we suggest: **{suggestion}**! Buy from {df[df['Product'] == suggestion]['Buy From'].values[0]}.")
-
-# Display vendor links
-st.write("### Where to Buy:")
-for _, row in df.iterrows():
-    st.write(f"**{row['Product']}** - Buy from [{row['Buy From']}](#)")
+    st.success(f"Based on your preferences, we suggest: **{suggestion}**!")
 
 # Visualizations
 st.write("### Data Visualizations")
 
-# Pie chart for category distribution (Plotly)
+# Pie chart for category distribution
 st.write("#### Category Distribution")
 fig = px.pie(df, names="Category", title="Product Category Distribution")
 st.plotly_chart(fig)
 
-# Histogram of Prices (Matplotlib)
+# Histogram of Prices
 st.write("#### Price Distribution")
 fig, ax = plt.subplots()
 ax.hist(df["Price"], bins=10, color='blue', edgecolor='black')
@@ -106,7 +85,7 @@ ax.set_ylabel("Count")
 ax.set_title("Price Distribution of Products")
 st.pyplot(fig)
 
-# Line graph of stock availability (Plotly)
+# Line graph of stock availability
 st.write("#### Stock Availability Trend")
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=df["Product"], y=df["Stock"], mode='lines+markers', name='Stock'))
