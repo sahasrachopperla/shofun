@@ -24,6 +24,16 @@ def recommend_products(category):
 def filter_by_budget(budget):
     return df[df["Price"] <= budget]
 
+# Function to plot price comparison
+def plot_comparison(products):
+    comparison_data = df[df["Product"].isin(products)]
+    plt.figure(figsize=(10, 5))
+    plt.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
+    plt.xlabel("Products")
+    plt.ylabel("Price")
+    plt.title("Product Price Comparison")
+    st.pyplot(plt)
+
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
 st.write("Find the best products tailored to your needs!")
@@ -43,6 +53,12 @@ st.table(filtered_products)
 # Wishlist feature
 wishlist = st.multiselect("Add products to your wishlist", df["Product"].tolist())
 st.write("### Your Wishlist:", wishlist)
+
+# Product comparison
+to_compare = st.multiselect("Select products to compare", df["Product"].tolist())
+if to_compare:
+    st.write("### Price Comparison Chart:")
+    plot_comparison(to_compare)
 
 # Footer
 st.write("---")
