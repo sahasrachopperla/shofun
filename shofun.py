@@ -3,6 +3,9 @@ import pandas as pd
 import random
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
 
 # Sample product data
 data = {
@@ -66,14 +69,15 @@ if to_compare:
     st.write("### Price Comparison:")
     st.table(comparison_data)
 
-    # Price Comparison Bar Chart
+    # Price Comparison Bar Chart (Seaborn)
     st.write("### Price Comparison Chart")
-    plt.figure(figsize=(8,5))
-    plt.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
-    plt.xlabel("Products")
-    plt.ylabel("Price")
-    plt.title("Price Comparison")
-    st.pyplot(plt)
+    fig, ax = plt.subplots()
+    sns.barplot(x=comparison_data["Product"], y=comparison_data["Price"], palette="coolwarm", ax=ax)
+    ax.set_xlabel("Products")
+    ax.set_ylabel("Price")
+    ax.set_title("Price Comparison")
+    plt.xticks(rotation=90)
+    st.pyplot(fig)
 
 # AI-powered product suggestion
 if st.button("Get AI-Powered Suggestions"):
@@ -88,15 +92,12 @@ for _, row in df.iterrows():
 # Visualizations
 st.write("### Data Visualizations")
 
-# Pie chart for category distribution
+# Pie chart for category distribution (Plotly)
 st.write("#### Category Distribution")
-fig, ax = plt.subplots()
-category_counts = df["Category"].value_counts()
-ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors)
-ax.axis('equal')
-st.pyplot(fig)
+fig = px.pie(df, names="Category", title="Product Category Distribution")
+st.plotly_chart(fig)
 
-# Histogram of Prices
+# Histogram of Prices (Matplotlib)
 st.write("#### Price Distribution")
 fig, ax = plt.subplots()
 ax.hist(df["Price"], bins=10, color='blue', edgecolor='black')
@@ -105,15 +106,12 @@ ax.set_ylabel("Count")
 ax.set_title("Price Distribution of Products")
 st.pyplot(fig)
 
-# Line graph of stock availability
+# Line graph of stock availability (Plotly)
 st.write("#### Stock Availability Trend")
-fig, ax = plt.subplots()
-ax.plot(df["Product"], df["Stock"], marker='o', linestyle='-', color='green')
-ax.set_xlabel("Product")
-ax.set_ylabel("Stock Availability")
-ax.set_title("Stock Trend Across Products")
-plt.xticks(rotation=90)
-st.pyplot(fig)
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=df["Product"], y=df["Stock"], mode='lines+markers', name='Stock'))
+fig.update_layout(title="Stock Trend Across Products", xaxis_title="Product", yaxis_title="Stock Availability")
+st.plotly_chart(fig)
 
 # Footer
 st.write("---")
