@@ -11,56 +11,18 @@ data = {
     "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000, 50000, 45000, 5000, 6000, 7000, 20000, 15000, 8000, 5000, 3500, 7000, 2500, 1500, 4000, 6000, 1000],
     "Ratings": [4.5, 4.7, 4.2, 4.3, 4.6, 4.4, 4.1, 4.0, 4.8, 4.6, 4.3, 4.5, 4.7, 4.4, 4.2, 4.5, 4.3, 4.2, 4.6, 4.0, 3.9, 4.5, 4.3, 4.1],
     "Stock": [10, 25, 50, 15, 20, 5, 30, 40, 12, 18, 35, 40, 22, 10, 8, 25, 20, 15, 18, 30, 40, 25, 12, 50],
-    "Discount": [10, 15, 5, 8, 12, 20, 25, 18, 10, 15, 8, 10, 12, 5, 10, 18, 20, 15, 18, 10, 12, 15, 10, 5]
+    "Discount": [10, 15, 5, 8, 12, 20, 25, 18, 10, 15, 8, 10, 12, 5, 10, 18, 20, 15, 18, 10, 12, 15, 10, 5],
+    "Buy From": ["Amazon", "Flipkart", "Croma", "Amazon", "Reliance Digital", "Amazon", "Nike", "Amazon", "Flipkart", "Amazon", "Flipkart", "Amazon", "Croma", "Flipkart", "Amazon", "Nike", "Myntra", "LensKart", "Amazon", "Levi's", "Myntra", "Adidas", "Titan", "Amazon"]
 }
 df = pd.DataFrame(data)
 
 # Function to recommend products based on category
 def recommend_products(category):
-    return df[df["Category"] == category][["Product", "Price", "Ratings", "Discount"]]
+    return df[df["Category"] == category][["Product", "Price", "Ratings", "Discount", "Buy From"]]
 
 # Function to filter products by budget
 def filter_by_budget(budget):
     return df[df["Price"] <= budget]
-
-# Function to plot price distribution
-def plot_price_distribution():
-    fig, ax = plt.subplots()
-    ax.bar(df["Product"], df["Price"], color='skyblue')
-    plt.xticks(rotation=45)
-    plt.xlabel("Product")
-    plt.ylabel("Price")
-    plt.title("Product Price Distribution")
-    st.pyplot(fig)
-
-# Function to plot ratings
-def plot_ratings():
-    fig, ax = plt.subplots()
-    ax.bar(df["Product"], df["Ratings"], color='orange')
-    plt.xticks(rotation=45)
-    plt.xlabel("Product")
-    plt.ylabel("Ratings")
-    plt.title("Product Ratings")
-    st.pyplot(fig)
-
-# Function to show best discounts
-def best_discounts():
-    top_discounts = df.sort_values(by="Discount", ascending=False).head(5)
-    st.write("### Best Discounted Products")
-    st.table(top_discounts)
-
-# Function to plot product comparison
-def plot_comparison(products):
-    if products:
-        selected_df = df[df["Product"].isin(products)]
-        fig, ax = plt.subplots()
-        ax.bar(selected_df["Product"], selected_df["Price"], color='purple', label="Price")
-        ax.set_xlabel("Product")
-        ax.set_ylabel("Price")
-        ax.set_title("Product Price Comparison")
-        plt.xticks(rotation=45)
-        plt.legend()
-        st.pyplot(fig)
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
@@ -81,33 +43,6 @@ st.table(filtered_products)
 # Wishlist feature
 wishlist = st.multiselect("Add products to your wishlist", df["Product"].tolist())
 st.write("### Your Wishlist:", wishlist)
-
-# Product comparison
-to_compare = st.multiselect("Select products to compare", df["Product"].tolist())
-st.write("### Comparison Table:")
-st.table(df[df["Product"].isin(to_compare)])
-plot_comparison(to_compare)
-
-# AI-powered product suggestion (Basic Random Suggestion for Demo)
-if st.button("Get AI-Powered Suggestions"):
-    suggestion = random.choice(df["Product"].tolist())
-    st.success(f"Based on your preferences, we suggest: **{suggestion}**!")
-
-# Display Graphs
-st.write("### Price Distribution of Products")
-plot_price_distribution()
-
-st.write("### Product Ratings Overview")
-plot_ratings()
-
-# Show best discounted products
-best_discounts()
-
-# Stock availability alert
-low_stock = df[df["Stock"] < 10]
-if not low_stock.empty:
-    st.warning("⚠️ The following products are low in stock:")
-    st.table(low_stock)
 
 # Footer
 st.write("---")
