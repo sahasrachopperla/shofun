@@ -13,7 +13,8 @@ data = {
     "Category": ["Electronics", "Electronics", "Accessories", "Electronics", "Electronics", "Electronics", "Fashion", "Fashion", "Electronics", "Electronics", "Accessories", "Accessories", "Accessories", "Electronics", "Electronics", "Fitness", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion", "Fashion"],
     "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000, 50000, 45000, 5000, 6000, 7000, 20000, 15000, 8000, 5000, 3500, 7000, 2500, 1500, 4000, 6000, 1000],
     "Ratings": [4.5, 4.7, 4.2, 4.3, 4.6, 4.4, 4.1, 4.0, 4.8, 4.6, 4.3, 4.5, 4.7, 4.4, 4.2, 4.5, 4.3, 4.2, 4.6, 4.0, 3.9, 4.5, 4.3, 4.1],
-    "Stock": [10, 25, 50, 15, 20, 5, 30, 40, 12, 18, 35, 40, 22, 10, 8, 25, 20, 15, 18, 30, 40, 25, 12, 50]
+    "Stock": [10, 25, 50, 15, 20, 5, 30, 40, 12, 18, 35, 40, 22, 10, 8, 25, 20, 15, 18, 30, 40, 25, 12, 50],
+    "Buy From": ["Amazon", "Flipkart", "Amazon", "Croma", "Reliance Digital", "Amazon", "Nike", "Amazon", "Flipkart", "Reliance Digital", "Amazon", "Flipkart", "Amazon", "Croma", "Amazon", "Nike", "Myntra", "Ray-Ban", "Amazon", "Levi's", "H&M", "Adidas", "Titan", "Amazon"]
 }
 df = pd.DataFrame(data)
 
@@ -65,8 +66,8 @@ if to_compare:
 
 # AI-powered product suggestion
 if st.button("Get AI-Powered Suggestions"):
-    suggestion = random.choice(df["Product"].tolist())
-    st.success(f"Based on your preferences, we suggest: **{suggestion}**!")
+    suggestion_row = df.sample(1).iloc[0]
+    st.success(f"Based on your preferences, we suggest: **{suggestion_row['Product']}**! You can buy it from **{suggestion_row['Buy From']}**.")
 
 # Visualizations
 st.write("### Data Visualizations")
