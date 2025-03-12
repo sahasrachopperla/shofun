@@ -2,18 +2,21 @@ import streamlit as st
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Sample product data
 data = {
     "Product": ["Laptop", "Smartphone", "Headphones", "Smartwatch", "Tablet", "Camera", "Shoes", "Backpack"],
     "Category": ["Electronics", "Electronics", "Accessories", "Electronics", "Electronics", "Electronics", "Fashion", "Fashion"],
-    "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000]
+    "Price": [70000, 30000, 2000, 15000, 25000, 40000, 3000, 2000],
+    "Ratings": [4.5, 4.7, 4.2, 4.3, 4.6, 4.4, 4.1, 4.0],
+    "Stock": [10, 25, 50, 15, 20, 5, 30, 40]
 }
 df = pd.DataFrame(data)
 
 # Function to recommend products based on category
 def recommend_products(category):
-    return df[df["Category"] == category]["Product"].tolist()
+    return df[df["Category"] == category][["Product", "Price", "Ratings"]]
 
 # Function to filter products by budget
 def filter_by_budget(budget):
@@ -29,6 +32,16 @@ def plot_price_distribution():
     plt.title("Product Price Distribution")
     st.pyplot(fig)
 
+# Function to plot ratings
+def plot_ratings():
+    fig, ax = plt.subplots()
+    ax.bar(df["Product"], df["Ratings"], color='orange')
+    plt.xticks(rotation=45)
+    plt.xlabel("Product")
+    plt.ylabel("Ratings")
+    plt.title("Product Ratings")
+    st.pyplot(fig)
+
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
 st.write("Find the best products tailored to your needs!")
@@ -36,7 +49,8 @@ st.write("Find the best products tailored to your needs!")
 # User preferences
 category = st.selectbox("Choose a category", df["Category"].unique())
 recommended = recommend_products(category)
-st.write("### Recommended Products:", recommended)
+st.write("### Recommended Products:")
+st.table(recommended)
 
 # Budget filtering
 budget = st.slider("Select your budget", min_value=1000, max_value=80000, step=1000)
@@ -58,9 +72,18 @@ if st.button("Get AI-Powered Suggestions"):
     suggestion = random.choice(df["Product"].tolist())
     st.success(f"Based on your preferences, we suggest: **{suggestion}**!")
 
-# Display Price Distribution Graph
+# Display Graphs
 st.write("### Price Distribution of Products")
 plot_price_distribution()
+
+st.write("### Product Ratings Overview")
+plot_ratings()
+
+# Stock availability alert
+low_stock = df[df["Stock"] < 10]
+if not low_stock.empty:
+    st.warning("⚠️ The following products are low in stock:")
+    st.table(low_stock)
 
 # Footer
 st.write("---")
