@@ -60,6 +60,15 @@ if to_compare:
     st.write("### Price Comparison:")
     st.table(comparison_data)
 
+    # Price Comparison Bar Chart
+    st.write("### Price Comparison Chart")
+    plt.figure(figsize=(8,5))
+    plt.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
+    plt.xlabel("Products")
+    plt.ylabel("Price")
+    plt.title("Price Comparison")
+    st.pyplot(plt)
+
 # AI-powered product suggestion
 if st.button("Get AI-Powered Suggestions"):
     suggestion = random.choice(df["Product"].tolist())
@@ -69,6 +78,36 @@ if st.button("Get AI-Powered Suggestions"):
 st.write("### Where to Buy:")
 for _, row in df.iterrows():
     st.write(f"**{row['Product']}** - Buy from [{row['Buy From']}](#)")
+
+# Visualizations
+st.write("### Data Visualizations")
+
+# Pie chart for category distribution
+st.write("#### Category Distribution")
+fig, ax = plt.subplots()
+category_counts = df["Category"].value_counts()
+ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors)
+ax.axis('equal')
+st.pyplot(fig)
+
+# Histogram of Prices
+st.write("#### Price Distribution")
+fig, ax = plt.subplots()
+ax.hist(df["Price"], bins=10, color='blue', edgecolor='black')
+ax.set_xlabel("Price")
+ax.set_ylabel("Count")
+ax.set_title("Price Distribution of Products")
+st.pyplot(fig)
+
+# Line graph of stock availability
+st.write("#### Stock Availability Trend")
+fig, ax = plt.subplots()
+ax.plot(df["Product"], df["Stock"], marker='o', linestyle='-', color='green')
+ax.set_xlabel("Product")
+ax.set_ylabel("Stock Availability")
+ax.set_title("Stock Trend Across Products")
+plt.xticks(rotation=90)
+st.pyplot(fig)
 
 # Footer
 st.write("---")
