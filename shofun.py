@@ -45,6 +45,12 @@ filtered_products = filter_by_budget(budget)
 st.write("### Products within your budget:")
 st.table(filtered_products)
 
+# Filter fashion-related products under budget
+if "Fashion" in categories:
+    fashion_products = df[(df["Category"] == "Fashion") & (df["Price"] <= budget)]
+    st.write("### Fashion Products Within Your Budget:")
+    st.table(fashion_products)
+
 # Display best discounts
 st.write("### Top 5 Best Discounts:")
 st.table(best_discounts())
