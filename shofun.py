@@ -16,23 +16,29 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Function to recommend products based on category
-def recommend_products(category):
-    return df[df["Category"] == category][["Product", "Price", "Ratings", "Discount", "Buy From"]]
-
-# Function to filter products by budget
-def filter_by_budget(budget):
-    return df[df["Price"] <= budget]
-
-# Function to plot price comparison
-def plot_comparison(products):
-    comparison_data = df[df["Product"].isin(products)]
-    plt.figure(figsize=(10, 5))
-    plt.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
-    plt.xlabel("Products")
-    plt.ylabel("Price")
-    plt.title("Product Price Comparison")
-    st.pyplot(plt)
+# Function to plot different graphs
+def plot_graphs():
+    fig, ax = plt.subplots(1, 3, figsize=(18, 5))
+    
+    # Pie chart for product category distribution
+    category_counts = df["Category"].value_counts()
+    ax[0].pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=140)
+    ax[0].set_title("Product Category Distribution")
+    
+    # Line graph for price trend per product
+    ax[1].plot(df["Product"], df["Price"], marker='o', linestyle='-', color='b')
+    ax[1].set_xticklabels(df["Product"], rotation=90)
+    ax[1].set_xlabel("Products")
+    ax[1].set_ylabel("Price")
+    ax[1].set_title("Price Trend Across Products")
+    
+    # Histogram for price distribution
+    ax[2].hist(df["Price"], bins=10, color='g', alpha=0.7)
+    ax[2].set_xlabel("Price Range")
+    ax[2].set_ylabel("Number of Products")
+    ax[2].set_title("Price Distribution")
+    
+    st.pyplot(fig)
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
@@ -40,13 +46,13 @@ st.write("Find the best products tailored to your needs!")
 
 # User preferences
 category = st.selectbox("Choose a category", df["Category"].unique())
-recommended = recommend_products(category)
+recommended = df[df["Category"] == category]
 st.write("### Recommended Products:")
 st.table(recommended)
 
 # Budget filtering
 budget = st.slider("Select your budget", min_value=1000, max_value=80000, step=1000)
-filtered_products = filter_by_budget(budget)
+filtered_products = df[df["Price"] <= budget]
 st.write("### Products within your budget:")
 st.table(filtered_products)
 
@@ -57,8 +63,21 @@ st.write("### Your Wishlist:", wishlist)
 # Product comparison
 to_compare = st.multiselect("Select products to compare", df["Product"].tolist())
 if to_compare:
-    st.write("### Price Comparison Chart:")
-    plot_comparison(to_compare)
+    comparison_data = df[df["Product"].isin(to_compare)]
+    st.write("### Price Comparison:")
+    st.table(comparison_data)
+    
+    # Price comparison graph
+    plt.figure(figsize=(10, 5))
+    plt.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
+    plt.xlabel("Products")
+    plt.ylabel("Price")
+    plt.title("Product Price Comparison")
+    plt.xticks(rotation=90)
+    st.pyplot(plt)
+
+# Display graphs
+plot_graphs()
 
 # Footer
 st.write("---")
