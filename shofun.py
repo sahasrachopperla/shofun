@@ -16,59 +16,38 @@ data = {
 }
 df = pd.DataFrame(data)
 
-# Function to plot Pie Chart
-def plot_pie_chart():
-    category_counts = df["Category"].value_counts()
-    fig, ax = plt.subplots()
-    ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=140)
-    ax.set_title("Product Category Distribution")
-    st.pyplot(fig)
+# Function to recommend products based on category
+def recommend_products(categories):
+    return df[df["Category"].isin(categories)]
 
-# Function to plot Line Graph
-def plot_line_graph():
-    fig, ax = plt.subplots()
-    ax.plot(df["Product"], df["Price"], marker='o', linestyle='-', color='b')
-    ax.set_xticklabels(df["Product"], rotation=90)
-    ax.set_xlabel("Products")
-    ax.set_ylabel("Price")
-    ax.set_title("Price Trend Across Products")
-    st.pyplot(fig)
+# Function to filter products by budget
+def filter_by_budget(budget):
+    return df[df["Price"] <= budget]
 
-# Function to plot Histogram
-def plot_histogram():
-    fig, ax = plt.subplots()
-    ax.hist(df["Price"], bins=10, color='g', alpha=0.7)
-    ax.set_xlabel("Price Range")
-    ax.set_ylabel("Number of Products")
-    ax.set_title("Price Distribution")
-    st.pyplot(fig)
-
-# Function to plot Bar Graph for Comparison
-def plot_comparison_graph(selected_products):
-    comparison_data = df[df["Product"].isin(selected_products)]
-    fig, ax = plt.subplots()
-    ax.bar(comparison_data["Product"], comparison_data["Price"], color='skyblue')
-    ax.set_xlabel("Products")
-    ax.set_ylabel("Price")
-    ax.set_title("Product Price Comparison")
-    ax.set_xticklabels(comparison_data["Product"], rotation=90)
-    st.pyplot(fig)
+# Function to get best discounts
+def best_discounts():
+    return df.sort_values(by="Discount", ascending=False).head(5)
 
 # Streamlit UI
 st.title("🛍️ Personalized Shopping Assistant")
 st.write("Find the best products tailored to your needs!")
 
-# User preferences
-category = st.selectbox("Choose a category", df["Category"].unique())
-recommended = df[df["Category"] == category]
-st.write("### Recommended Products:")
-st.table(recommended)
+# Multi-category selection
+categories = st.multiselect("Choose categories", df["Category"].unique())
+if categories:
+    recommended = recommend_products(categories)
+    st.write("### Recommended Products:")
+    st.table(recommended)
 
 # Budget filtering
 budget = st.slider("Select your budget", min_value=1000, max_value=80000, step=1000)
-filtered_products = df[df["Price"] <= budget]
+filtered_products = filter_by_budget(budget)
 st.write("### Products within your budget:")
 st.table(filtered_products)
+
+# Display best discounts
+st.write("### Top 5 Best Discounts:")
+st.table(best_discounts())
 
 # Wishlist feature
 wishlist = st.multiselect("Add products to your wishlist", df["Product"].tolist())
@@ -77,20 +56,19 @@ st.write("### Your Wishlist:", wishlist)
 # Product comparison
 to_compare = st.multiselect("Select products to compare", df["Product"].tolist())
 if to_compare:
-    st.write("### Price Comparison:")
     comparison_data = df[df["Product"].isin(to_compare)]
+    st.write("### Price Comparison:")
     st.table(comparison_data)
-    plot_comparison_graph(to_compare)
 
-# Display graphs
-st.write("### Product Category Distribution")
-plot_pie_chart()
+# AI-powered product suggestion
+if st.button("Get AI-Powered Suggestions"):
+    suggestion = random.choice(df["Product"].tolist())
+    st.success(f"Based on your preferences, we suggest: **{suggestion}**! Buy from {df[df['Product'] == suggestion]['Buy From'].values[0]}.")
 
-st.write("### Price Trend Across Products")
-plot_line_graph()
-
-st.write("### Price Distribution")
-plot_histogram()
+# Display vendor links
+st.write("### Where to Buy:")
+for _, row in df.iterrows():
+    st.write(f"**{row['Product']}** - Buy from [{row['Buy From']}](#)")
 
 # Footer
 st.write("---")
