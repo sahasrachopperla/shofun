@@ -93,6 +93,18 @@ fig.add_trace(go.Scatter(x=df["Product"], y=df["Stock"], mode='lines+markers', n
 fig.update_layout(title="Stock Trend Across Products", xaxis_title="Product", yaxis_title="Stock Availability")
 st.plotly_chart(fig)
 
+# User Ratings Distribution
+st.write("#### Ratings Distribution")
+fig, ax = plt.subplots()
+sns.boxplot(y=df["Ratings"], ax=ax)
+ax.set_title("Distribution of Product Ratings")
+st.pyplot(fig)
+
+# Discount Offers Simulation
+st.write("#### Discounted Prices")
+df["Discounted Price"] = df["Price"] * (1 - np.random.uniform(0.1, 0.3, len(df)))
+st.table(df[["Product", "Price", "Discounted Price"]])
+
 # Footer
 st.write("---")
 st.write("Developed with ❤️ using Streamlit")
